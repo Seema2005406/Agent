@@ -33,14 +33,14 @@ def allocate_spot():
 @charge_agent.on_message(model=Message)
 async def handle_response(ctx: Context, sender: str, msg: Message):
     """Handles incoming messages and allocates a spot without checking for duplicates."""
-
+    ctx.logger.info(f"📩 Received Message from {sender}: {msg.message}")
     request_text = msg.message.lower()
 
     # Tesla cars are not supported
     if "tesla" in request_text:
         response = "❌ Sorry, Tesla vehicles are not supported at this charging station."
         await ctx.send(sender, Message(message=response))
-        # ctx.logger.info(f"Rejected car {sender}: Tesla vehicles are not allowed.")
+        ctx.logger.info(f"Rejected car {sender}: {response}")
     else:
         spot_id = allocate_spot()
         if spot_id:
@@ -49,6 +49,7 @@ async def handle_response(ctx: Context, sender: str, msg: Message):
             prompt = f"User request: '{request_text}'\nSystem decision: '{response}'\n Imagine You are charge agent and respond only about spot allocation or not only using 5 words maximum."
             ai_response = llm.invoke(prompt)
             await ctx.send(sender, Message(message=ai_response))
+            ctx.logger.info(f"📩 Send Message to {sender}: {ai_response}")
         else:
             response = "❌ Sorry, No charging spots available at the moment. Please try again later."
             # ctx.logger.info("No charging spots available.")
@@ -56,6 +57,7 @@ async def handle_response(ctx: Context, sender: str, msg: Message):
             # ai_response = llm.invoke(prompt)
             # await ctx.send(sender, Message(message=ai_response))
             await ctx.send(sender, Message(message=response))
+            ctx.logger.info(f"📩 Send Message to {sender}: {response}")
 
 
 if __name__ == "__main__":
