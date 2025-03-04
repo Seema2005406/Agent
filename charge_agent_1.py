@@ -1,4 +1,7 @@
 from langchain.llms import Ollama
+
+
+
 from uagents import Agent, Context, Model
 
 
@@ -15,11 +18,12 @@ charging_spots = [
 class Message(Model):
     message: str
 
+
 charge_agent = Agent(
     name="ChargeAgent1",
     port=8003,
     seed="charge_secret_phrase1",
-    endpoint=["http://127.0.0.1:8003/submit"],
+    endpoint=[f"http://127.0.0.1:8003/submit"],
 )
 
 def allocate_spot():
